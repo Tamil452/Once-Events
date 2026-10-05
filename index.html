@@ -1,0 +1,1020 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ONCE — Events that happen exactly once</title>
+<meta name="description" content="ONCE is an event house that designs every wedding, premiere, gala and celebration from scratch — and never stages it again.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ink:#0D0C0B; --panel:#171513; --panel-2:#1F1C19; --bone:#EFE8DC; --bone-2:#D8D0C3;
+  --muted:#A39A8C; --body:#C9C0B2; --line:rgba(239,232,220,.14); --line-2:rgba(239,232,220,.32);
+  --accent:#FF5A1F; --wa:#25D366;
+  --display:'Syne','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --wrap:1280px; --gutter:clamp(20px,4vw,56px);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:dark;
+}
+/* The brand is a night-time house: it stays dark in both viewer themes. */
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --ink:#0D0C0B; --bone:#EFE8DC; } }
+:root[data-theme="dark"]{ --ink:#0D0C0B; --bone:#EFE8DC; }
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 84px);background:var(--ink)}
+body{margin:0;background:var(--ink);color:var(--bone);font-family:var(--display);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.wrap{max-width:var(--wrap);margin:0 auto;padding-inline:var(--gutter)}
+.serif{font-family:var(--serif);font-weight:400}
+.it{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
+.label{font-family:var(--mono);font-size:13px;color:var(--muted);letter-spacing:.02em}
+.btn{display:inline-flex;align-items:center;gap:12px;min-height:48px;padding:16px 26px;border-radius:999px;font:700 16px/1 var(--display);text-decoration:none;cursor:pointer;border:1px solid transparent;transition:transform .2s ease, background-color .2s ease}
+.btn:active{transform:scale(.98)}
+.btn-accent{background:var(--accent);color:var(--ink)}
+.btn-ghost{background:transparent;color:var(--bone);border-color:var(--line-2);font-weight:500}
+.btn-ghost:hover{border-color:var(--bone)}
+.btn-wa{background:var(--wa);color:var(--ink)}
+.btn svg{flex:none}
+
+/* Header */
+.header{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:rgba(13,12,11,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:76px}
+.logo{display:flex;align-items:baseline;gap:6px;text-decoration:none;font-weight:800;font-size:26px;letter-spacing:-.04em}
+.logo i{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav-links{display:flex;align-items:center;gap:clamp(18px,2.4vw,34px);font-size:15px;font-weight:500}
+.nav-links a{text-decoration:none}
+.nav-links a:not(.btn):hover{color:var(--accent)}
+.nav-links .btn{padding:12px 18px;font-size:15px;min-height:44px}
+.nav-wa{color:var(--wa);border-color:var(--wa)!important;background:transparent}
+.menu-btn{display:none;width:48px;height:48px;border-radius:50%;border:1px solid var(--line-2);background:transparent;color:var(--bone);cursor:pointer;align-items:center;justify-content:center}
+@media (max-width: 1120px){
+  .menu-btn{display:inline-flex}
+  .nav-links{display:none;position:absolute;left:0;right:0;top:100%;flex-direction:column;align-items:stretch;gap:0;background:var(--ink);border-bottom:1px solid var(--line);padding:8px var(--gutter) 24px}
+  .nav-links.open{display:flex}
+  .nav-links a:not(.btn){padding:16px 0;border-bottom:1px solid var(--line);font-size:20px}
+  .nav-links .btn{margin-top:14px;justify-content:center}
+}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:48px;align-items:center;padding-block:clamp(48px,8vw,112px) clamp(48px,6vw,80px)}
+@media (max-width: 900px){.hero{grid-template-columns:minmax(0,1fr)}}
+.hero-kicker{display:flex;align-items:center;gap:12px}
+.pulse{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 2.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.hero h1{margin:28px 0 0;font-weight:800;font-size:clamp(52px,8.2vw,134px);line-height:.9;letter-spacing:-.05em}
+.hero h1 .word{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.06em}
+.hero h1 .word > span{display:inline-block;transform:translateY(105%);animation:rise .9s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes rise{to{transform:translateY(0)}}
+.hero h1 em{font-family:var(--serif);font-weight:400;color:var(--accent);letter-spacing:-.02em}
+.hero-lede{margin:32px 0 0;max-width:34ch;font-family:var(--serif);font-size:clamp(22px,2.1vw,28px);line-height:1.38;color:var(--bone-2)}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:36px}
+.seal{position:relative;display:grid;place-items:center;min-height:420px}
+.seal svg{width:min(100%,470px);height:auto;animation:spin 60s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.seal-core{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;pointer-events:none}
+.seal-core .n{font-family:var(--serif);font-size:clamp(92px,10vw,132px);line-height:.9}
+.seal-core .bar{width:64px;height:2px;background:var(--accent);margin:12px 0 8px}
+
+/* Marquee */
+.marquee{border-block:1px solid var(--line);padding:22px 0;overflow:hidden}
+.marquee-track{display:flex;gap:48px;width:max-content;white-space:nowrap;font-weight:700;font-size:clamp(28px,3.4vw,46px);letter-spacing:-.03em;animation:marquee 44s linear infinite}
+.marquee-track .star{color:var(--accent)}
+@keyframes marquee{to{transform:translateX(-50%)}}
+
+/* Sections */
+.section{padding-block:clamp(80px,10vw,140px)}
+.section-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:28px;margin-bottom:56px}
+.h2{margin:14px 0 0;font-weight:800;font-size:clamp(40px,5.6vw,84px);line-height:.94;letter-spacing:-.045em;max-width:16ch}
+.h2 .it{display:block}
+.section-head p{margin:0;max-width:40ch;font-size:17px;line-height:1.65;color:var(--body)}
+
+/* Vow */
+.vow{background:var(--bone);color:var(--ink)}
+.vow .label{color:#5A5249}
+.vow .section-head p{color:#3A352F}
+.vow-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink)}
+.vow-grid article{padding:36px 32px 8px;border-right:1px solid rgba(13,12,11,.18)}
+.vow-grid article:first-child{padding-left:0}
+.vow-grid article:last-child{border-right:0;padding-right:0}
+.vow-grid .numeral{font-family:var(--serif);font-size:68px;line-height:1}
+.vow-grid h3{margin:22px 0 12px;font-size:28px;letter-spacing:-.03em}
+.vow-grid p{margin:0;font-size:17px;line-height:1.65;color:#3A352F;max-width:36ch}
+@media (max-width: 860px){
+  .vow-grid{grid-template-columns:1fr}
+  .vow-grid article{padding:32px 0;border-right:0;border-bottom:1px solid rgba(13,12,11,.18)}
+}
+
+/* Method */
+.method{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid var(--line)}
+.method article{padding:36px 28px 40px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:18px;min-width:0}
+.method article:first-child{padding-left:0}
+.method article:last-child{border-right:0;padding-right:0}
+.method .step{font-family:var(--serif);font-size:20px;color:var(--accent)}
+.method h3{margin:0;font-family:var(--serif);font-weight:400;font-size:52px;line-height:1}
+.method p{margin:0;font-size:16px;line-height:1.65;color:var(--body);flex:1}
+.method .out{font-size:14px;color:var(--bone);border-top:1px solid var(--line);padding-top:16px}
+@media (max-width: 1000px){.method{grid-template-columns:repeat(2,minmax(0,1fr))}.method article{border-bottom:1px solid var(--line);padding:36px 28px 40px}.method article:nth-child(odd){padding-left:0}.method article:nth-child(even){border-right:0;padding-right:0}}
+@media (max-width: 600px){.method{grid-template-columns:1fr}.method article{padding:32px 0!important;border-right:0}}
+
+/* Pills / tabs */
+.pills{display:flex;flex-wrap:wrap;gap:10px}
+.pill{font:500 15px/1 var(--display);padding:14px 20px;min-height:46px;border-radius:999px;cursor:pointer;background:transparent;color:var(--bone);border:1px solid var(--line-2);transition:background-color .2s, color .2s, border-color .2s}
+.pill:hover{border-color:var(--bone)}
+.pill[aria-selected="true"],.pill[aria-pressed="true"]{background:var(--bone);color:var(--ink);border-color:var(--bone)}
+.pill.accent[aria-selected="true"]{background:var(--accent);border-color:var(--accent)}
+
+/* Formats */
+.format-panel{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;margin-top:36px}
+@media (max-width: 900px){.format-panel{grid-template-columns:minmax(0,1fr)}}
+.format-story{background:var(--panel);border:1px solid var(--line);border-radius:28px;padding:clamp(28px,4vw,52px);display:flex;flex-direction:column;justify-content:space-between;gap:28px;min-height:400px}
+.format-story h3{margin:0;font-family:var(--serif);font-weight:400;font-size:clamp(38px,4.4vw,64px);line-height:1.02;max-width:18ch}
+.format-story p{margin:0;font-size:17px;line-height:1.65;color:var(--body);max-width:52ch}
+.format-list{border:1px solid var(--line);border-radius:28px;padding:clamp(28px,4vw,52px);display:flex;flex-direction:column}
+.format-list ol{list-style:none;margin:12px 0 0;padding:0;counter-reset:f}
+.format-list li{counter-increment:f;display:flex;gap:18px;align-items:baseline;padding:20px 0;border-bottom:1px solid var(--line);font-size:19px;line-height:1.45;font-weight:500}
+.format-list li::before{content:counter(f);font-family:var(--serif);font-size:22px;color:var(--accent);min-width:18px}
+.format-list .text-link{margin-top:28px;align-self:flex-start;font-weight:700;text-decoration:none;display:inline-flex;gap:10px;align-items:center;min-height:44px}
+.format-list .text-link:hover{color:var(--accent)}
+.fade{animation:fade .45s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Seal section */
+.sealed{background:var(--accent);color:var(--ink)}
+.sealed-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:start}
+@media (max-width: 900px){.sealed-grid{grid-template-columns:minmax(0,1fr);gap:40px}}
+.sealed h2{margin:0;font-weight:800;font-size:clamp(44px,6vw,96px);line-height:.9;letter-spacing:-.05em}
+.sealed dl{margin:0}
+.sealed .row{display:grid;grid-template-columns:130px minmax(0,1fr);gap:24px;padding:26px 0;border-top:1px solid rgba(13,12,11,.4)}
+.sealed .row:first-child{border-top:2px solid var(--ink)}
+.sealed .row:last-child{border-bottom:1px solid rgba(13,12,11,.4)}
+.sealed dt{font-family:var(--serif);font-size:26px;line-height:1.1}
+.sealed dd{margin:0;font-size:18px;line-height:1.55}
+@media (max-width: 520px){.sealed .row{grid-template-columns:1fr;gap:8px}}
+
+/* Gallery */
+.gallery{columns:3 300px;column-gap:20px;margin-top:36px}
+.tile{display:block;width:100%;margin:0 0 22px;padding:0;border:0;background:transparent;color:var(--bone);text-align:left;cursor:pointer;break-inside:avoid;font:inherit}
+.tile-frame{position:relative;width:100%;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:var(--panel-2)}
+.tile-frame img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.tile:hover .tile-frame img,.tile:hover .art{transform:scale(1.04)}
+.art{position:absolute;inset:0;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.tile-tag{position:absolute;top:14px;left:14px;font-family:var(--mono);font-size:12px;background:rgba(13,12,11,.72);color:var(--bone);padding:7px 11px;border-radius:999px}
+.tile-hint{position:absolute;bottom:14px;right:14px;font-family:var(--mono);font-size:11px;color:var(--muted);background:rgba(13,12,11,.6);padding:5px 9px;border-radius:999px}
+.tile-meta{display:flex;justify-content:space-between;gap:12px;padding:14px 2px 0}
+.tile-meta strong{font-size:17px;font-weight:600;letter-spacing:-.01em}
+.tile-meta span{font-size:14px;color:var(--muted);white-space:nowrap}
+.empty{padding:48px 0;color:var(--body);font-size:17px}
+
+/* Lightbox */
+.lightbox{position:fixed;inset:0;z-index:60;background:rgba(13,12,11,.96);display:none;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 16px) clamp(12px,4vw,56px) calc(env(safe-area-inset-bottom,0px) + 16px)}
+.lightbox.open{display:flex}
+.lb-inner{width:100%;max-width:1120px;display:flex;flex-direction:column;gap:18px}
+.lb-top,.lb-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px}
+.lb-stage{display:flex;align-items:center;gap:14px}
+.lb-image{position:relative;flex:1;min-width:0;height:min(64vh,660px);border-radius:22px;overflow:hidden;border:1px solid var(--line);background:var(--panel-2)}
+.lb-image img{width:100%;height:100%;object-fit:contain}
+.icon-btn{flex:none;width:52px;height:52px;border-radius:50%;border:1px solid var(--line-2);background:transparent;color:var(--bone);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.icon-btn:hover{border-color:var(--bone)}
+.lb-caption{font-family:var(--serif);font-size:clamp(26px,3vw,40px);line-height:1.1}
+.lb-actions{display:flex;flex-wrap:wrap;gap:10px}
+.lb-actions .btn{padding:14px 20px;font-size:15px}
+@media (max-width: 600px){.lb-stage .icon-btn{display:none}.lb-image{height:56vh}}
+
+/* Ledger */
+.ledger{overflow-x:auto;border-top:2px solid var(--bone)}
+.ledger table{width:100%;min-width:720px;border-collapse:collapse}
+.ledger td,.ledger th{padding:26px 16px 26px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.ledger th{font-weight:400}
+.ledger .no{font-family:var(--serif);font-size:34px;width:130px}
+.ledger .name{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.ledger .meta{font-size:15px;color:var(--body)}
+.status{display:inline-block;font-size:14px;padding:9px 14px;border-radius:999px;border:1px solid var(--line-2);color:var(--body);white-space:nowrap}
+.status.composing{border-color:var(--bone);color:var(--bone)}
+.status.open{background:var(--accent);border-color:var(--accent);color:var(--ink);font-weight:600;text-decoration:none}
+
+/* Commission */
+.commission{background:var(--panel);border-top:1px solid var(--line)}
+.commission-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:64px;align-items:start}
+@media (max-width: 960px){.commission-grid{grid-template-columns:minmax(0,1fr);gap:48px}}
+.commission h2{margin:14px 0 0;font-weight:800;font-size:clamp(48px,6.4vw,104px);line-height:.9;letter-spacing:-.05em}
+.commission h2 .it{display:block;color:var(--accent)}
+.contact{display:flex;flex-direction:column;gap:10px;margin-top:32px;font-size:16px}
+.contact a{text-decoration:none}
+.contact a:hover{color:var(--accent)}
+.contact .wa-link{color:var(--wa)}
+form{display:flex;flex-direction:column;gap:28px}
+fieldset{border:0;margin:0;padding:0}
+legend{padding:0;margin-bottom:14px}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+@media (max-width: 560px){.fields{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:8px}
+.field input,.field textarea{background:transparent;border:0;border-bottom:1px solid var(--line-2);color:var(--bone);font:500 19px/1.3 var(--display);padding:12px 0;min-height:48px;border-radius:0}
+.field textarea{border:1px solid var(--line-2);border-radius:16px;padding:16px;font:400 21px/1.45 var(--serif);resize:vertical;min-height:140px}
+.field input::placeholder,.field textarea::placeholder{color:#7d7568}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--accent)}
+.field textarea:focus{box-shadow:0 0 0 1px var(--accent)}
+.field[data-invalid="true"] input,.field[data-invalid="true"] textarea{border-color:#FF8A65}
+.error{font-size:14px;color:#FF8A65;min-height:1em}
+.form-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.form-note{font-size:14px;color:var(--muted);margin:0}
+.done{border:1px solid var(--line-2);border-radius:28px;padding:clamp(28px,4vw,52px);display:none;flex-direction:column;gap:18px;align-items:flex-start}
+.done.show{display:flex}
+.done h3{margin:0;font-family:var(--serif);font-weight:400;font-size:clamp(40px,4.4vw,56px);line-height:1}
+.done p{margin:0;font-size:17px;line-height:1.6;color:var(--body);max-width:46ch}
+
+/* Footer */
+.footer{padding-block:72px 40px}
+.wordmark{display:flex;align-items:baseline;gap:14px;font-weight:800;font-size:clamp(96px,21vw,320px);line-height:.8;letter-spacing:-.07em}
+.wordmark i{width:clamp(18px,3vw,42px);height:clamp(18px,3vw,42px);border-radius:50%;background:var(--accent);display:inline-block}
+.foot-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;margin-top:48px;padding-top:24px;border-top:1px solid var(--line);font-size:15px;color:var(--muted)}
+.foot-row nav{display:flex;flex-wrap:wrap;gap:24px}
+.foot-row a{text-decoration:none}
+.foot-row a:hover{color:var(--bone)}
+
+/* Floating WhatsApp */
+.wa-float{position:fixed;right:clamp(16px,3vw,32px);bottom:calc(env(safe-area-inset-bottom,0px) + clamp(16px,3vw,28px));z-index:40;display:inline-flex;align-items:center;gap:12px;background:var(--wa);color:var(--ink);text-decoration:none;padding:12px 22px 12px 12px;border-radius:999px;font:700 15px/1 var(--display);min-height:58px;box-shadow:0 14px 34px rgba(0,0,0,.5);transition:transform .2s}
+.wa-float:hover{transform:translateY(-2px)}
+.wa-float .dot{width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--wa);display:inline-flex;align-items:center;justify-content:center}
+@media (max-width: 520px){.wa-float .txt{display:none}.wa-float{padding:12px}}
+
+.visually-hidden{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* =====================================================================
+   Responsive & alignment fixes
+   ===================================================================== */
+/* Balanced headings: no single-word orphans like "sign" on its own line */
+.hero h1,.h2,.sealed h2,.commission h2,.format-story h3,.done h3{text-wrap:balance}
+.hero-lede,.section-head p,.vow-grid p,.method p,.format-story p,.sealed dd,.done p{text-wrap:pretty}
+
+/* Wider canvas on large monitors so content doesn't float in a narrow column */
+@media (min-width: 1680px){ :root{--wrap:1440px} }
+@media (min-width: 2200px){ :root{--wrap:1600px} }
+
+/* Hero headline sized to its column, not the viewport, so it never collapses to one word per line */
+.hero > div:first-child{container-type:inline-size;min-width:0}
+.hero h1{font-size:clamp(44px,8.2vw,124px)}
+@supports (font-size:1cqi){ .hero h1{font-size:clamp(44px,18.5cqi,150px)} }
+@media (max-width: 900px){ @supports (font-size:1cqi){ .hero h1{font-size:clamp(44px,12.5cqi,104px)} } }
+.hero-kicker{align-items:flex-start;line-height:1.5}
+.hero-kicker .pulse{flex:none;margin-top:.55em}
+
+/* Seal scales with the screen instead of reserving a fixed 420px block */
+.seal{min-height:0;aspect-ratio:1/1;width:min(100%,470px);justify-self:center}
+.seal svg{width:100%}
+@media (max-width: 900px){
+  .hero{gap:clamp(28px,6vw,48px)}
+  .seal{width:min(78vw,360px);margin-inline:auto}
+}
+@media (max-width: 480px){
+  .seal-core .n{font-size:clamp(64px,20vw,92px)}
+  .seal-core .bar{width:48px;margin:8px 0 6px}
+}
+
+/* Section heads: stack cleanly on tablets and phones */
+@media (max-width: 860px){
+  .section-head{flex-direction:column;align-items:flex-start;gap:20px;margin-bottom:40px}
+  .section-head p{max-width:56ch}
+}
+
+/* Vow: on tablets use the width with a numeral column instead of a narrow stack */
+@media (min-width: 561px) and (max-width: 860px){
+  .vow-grid article{display:grid;grid-template-columns:96px minmax(0,1fr);column-gap:24px;align-items:start}
+  .vow-grid .numeral{grid-row:1/3;font-size:56px}
+  .vow-grid h3{margin:4px 0 10px}
+  .vow-grid p{max-width:60ch}
+}
+@media (max-width: 560px){ .vow-grid .numeral{font-size:52px} .vow-grid h3{font-size:24px;margin-top:16px} }
+
+/* Method: a bit smaller headings on narrow columns */
+@media (max-width: 1200px){ .method h3{font-size:clamp(36px,4.2vw,52px)} }
+@media (max-width: 600px){ .method h3{font-size:44px} .method article{gap:14px} }
+
+/* Formats / gallery: no forced tall panel on phones, tighter pills */
+@media (max-width: 900px){ .format-story{min-height:0} }
+@media (max-width: 600px){
+  .format-story,.format-list,.done{border-radius:22px;padding:24px}
+  .format-list li{font-size:17px;padding:16px 0}
+  .pills{gap:8px}
+  .pill{padding:12px 16px;font-size:14px;min-height:44px}
+}
+.format-list li{min-width:0}
+
+/* Gallery: 1 column phones, 2 tablets, 3 desktop, 4 on large monitors */
+.gallery{columns:3;column-gap:20px}
+@media (max-width: 1000px){ .gallery{columns:2} }
+@media (max-width: 560px){ .gallery{columns:1} }
+@media (min-width: 1680px){ .gallery{columns:4} }
+.tile-meta strong{min-width:0}
+
+/* Sealed rows: label column scales down */
+@media (max-width: 1100px){ .sealed .row{grid-template-columns:110px minmax(0,1fr)} }
+@media (max-width: 520px){ .sealed dt{font-size:24px} .sealed dd{font-size:17px} }
+
+/* Ledger: becomes stacked cards on phones so the status is never scrolled out of view */
+@media (max-width: 720px){
+  .ledger{overflow:visible}
+  .ledger table{min-width:0}
+  .ledger table,.ledger tbody{display:block}
+  .ledger tr{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;row-gap:6px;align-items:center;padding:22px 0;border-bottom:1px solid var(--line)}
+  .ledger td,.ledger th{display:block;padding:0;border:0;width:auto}
+  .ledger .no{grid-column:1;grid-row:1;font-size:28px}
+  .ledger td:last-child{grid-column:2;grid-row:1;justify-self:end}
+  .ledger .name{grid-column:1/-1;grid-row:2;font-size:20px}
+  .ledger td:nth-child(3){grid-column:1;grid-row:3}
+  .ledger td:nth-child(4){grid-column:2;grid-row:3;justify-self:end}
+  .status{font-size:13px;padding:8px 12px}
+}
+
+/* Form: fields can never push past the column (textarea default width did) */
+fieldset{min-width:0}
+.field{min-width:0}
+.field input,.field textarea{width:100%;min-width:0}
+@media (max-width: 560px){
+  .form-actions .btn{flex:1 1 100%;justify-content:center}
+  .field textarea{font-size:19px}
+}
+
+/* Commission contact links: keep long emails from overflowing */
+.contact{overflow-wrap:anywhere}
+
+/* Lightbox: usable in phone landscape / short screens */
+@media (max-height: 560px){
+  .lightbox{align-items:flex-start;overflow-y:auto}
+  .lb-image{height:62vh}
+  .lb-inner{gap:10px}
+  .lb-caption{font-size:22px}
+}
+@media (max-width: 600px){
+  .lb-actions{width:100%}
+  .lb-actions .btn{flex:1 1 auto;justify-content:center}
+}
+
+/* Footer */
+.wordmark{font-size:clamp(72px,21vw,320px)}
+@media (max-width: 600px){
+  .foot-row{flex-direction:column;gap:16px}
+  .foot-row nav{gap:12px 20px}
+  .footer{padding-bottom:calc(40px + 72px)} /* clear the floating WhatsApp button */
+}
+
+/* Floating WhatsApp stays clear of content on very small phones */
+@media (max-width: 360px){ .wa-float{right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px)} }
+
+/* Very small phones (≤360px) */
+@media (max-width: 360px){
+  :root{--gutter:16px}
+  .btn{padding:14px 20px;font-size:15px}
+  .hero-ctas .btn{flex:1 1 100%;justify-content:center}
+  .logo{font-size:22px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important;scroll-behavior:auto!important}
+  .hero h1 .word > span{transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="wrap nav">
+    <a class="logo" href="#top" aria-label="ONCE, back to top">ONCE<i></i></a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16"/><path d="M4 16h16"/></svg>
+    </button>
+    <nav class="nav-links" id="nav-links" aria-label="Primary">
+      <a href="#vow">The vow</a>
+      <a href="#method">How we work</a>
+      <a href="#formats">Formats</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#ledger">Ledger</a>
+      <a class="btn btn-ghost nav-wa" data-wa="general" href="#" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.7-5.1A8.5 8.5 0 1 1 21 11.5z"/></svg>
+        WhatsApp
+      </a>
+      <a class="btn btn-accent" href="#commission">Commission an edition</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- Hero -->
+  <section class="wrap hero" aria-labelledby="hero-title">
+    <div>
+      <div class="hero-kicker label"><span class="pulse" aria-hidden="true"></span><span>Event house in [CITY], since [YEAR]</span></div>
+      <h1 id="hero-title" aria-label="Every event we make happens exactly once.">
+        <span class="word" aria-hidden="true"><span style="animation-delay:.05s">Every</span></span>
+        <span class="word" aria-hidden="true"><span style="animation-delay:.12s">event</span></span>
+        <span class="word" aria-hidden="true"><span style="animation-delay:.19s">we</span></span>
+        <span class="word" aria-hidden="true"><span style="animation-delay:.26s">make</span></span>
+        <span class="word" aria-hidden="true"><span style="animation-delay:.33s">happens</span></span>
+        <span class="word" aria-hidden="true"><span style="animation-delay:.48s"><em>exactly</em></span></span>
+        <span class="word" aria-hidden="true"><span style="animation-delay:.58s">once.</span></span>
+      </h1>
+      <p class="hero-lede">No packages, no templates, no reruns. We design one night from one story, then seal the plans so it can never be staged again.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-accent" href="#commission">Commission your edition
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="#gallery">See past editions</a>
+      </div>
+    </div>
+    <div class="seal" aria-hidden="true">
+      <svg viewBox="0 0 400 400">
+        <defs><path id="ring" d="M200,200 m-160,0 a160,160 0 1,1 320,0 a160,160 0 1,1 -320,0"/></defs>
+        <circle cx="200" cy="200" r="190" fill="none" stroke="rgba(239,232,220,.16)"/>
+        <circle cx="200" cy="200" r="130" fill="none" stroke="rgba(239,232,220,.16)" stroke-dasharray="2 7"/>
+        <text style="font-family:'IBM Plex Mono',monospace;font-size:15px;letter-spacing:4px;fill:#EFE8DC">
+          <textPath href="#ring" textLength="1000" lengthAdjust="spacing">THIS HAPPENS ONCE ✳ NEVER REPEATED ✳ THIS HAPPENS ONCE ✳ NEVER REPEATED ✳</textPath>
+        </text>
+      </svg>
+      <div class="seal-core">
+        <span class="label">edition</span>
+        <span class="n">Nº1</span>
+        <span class="bar"></span>
+        <span class="label">of 1</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Weddings</span><span class="star">✳</span><span class="it">Brand premieres</span><span class="star">✳</span><span>Galas</span><span class="star">✳</span><span class="it">Private milestones</span><span class="star">✳</span><span>Retreats</span><span class="star">✳</span><span class="it">Things without a name yet</span><span class="star">✳</span>
+      <span>Weddings</span><span class="star">✳</span><span class="it">Brand premieres</span><span class="star">✳</span><span>Galas</span><span class="star">✳</span><span class="it">Private milestones</span><span class="star">✳</span><span>Retreats</span><span class="star">✳</span><span class="it">Things without a name yet</span><span class="star">✳</span>
+    </div>
+  </div>
+
+  <!-- Vow -->
+  <section id="vow" class="vow section" aria-labelledby="vow-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="label">The vow</span>
+          <h2 class="h2" id="vow-title">Three promises we sign <span class="it">with every client.</span></h2>
+        </div>
+        <p>Most agencies sell you something they have sold before. We put three promises in writing, and we keep them.</p>
+      </div>
+      <div class="vow-grid">
+        <article><div class="numeral">I.</div><h3>Never repeated.</h3><p>No concept, set, menu or music we create for you is ever staged for anyone else. Your night has no sequel and no copy.</p></article>
+        <article><div class="numeral">II.</div><h3>Built from one story.</h3><p>Every decision traces back to a single story we draw out of you: a memory, a founding moment, a promise. Nothing is just decoration.</p></article>
+        <article><div class="numeral">III.</div><h3>Sealed after.</h3><p>When the last guest leaves, the plans are bound, sealed and handed to you. We keep the edition number, never the design.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Method -->
+  <section id="method" class="wrap section" aria-labelledby="method-title">
+    <div class="section-head">
+      <div>
+        <span class="label">How we work</span>
+        <h2 class="h2" id="method-title">Four movements. <span class="it" style="color:var(--accent)">One night.</span></h2>
+      </div>
+      <p>We work like composers, not caterers. Every edition moves through the same four stages and ends with something that has never existed before.</p>
+    </div>
+    <div class="method">
+      <article><span class="step">First</span><h3>Listen</h3><p>Long, unhurried conversations with you and the people around you. We are looking for the one story this night must tell.</p><span class="out">You get the story brief</span></article>
+      <article><span class="step">Second</span><h3>Compose</h3><p>Space, light, sound, food and pacing, written as one score. Every element is designed from zero for this edition.</p><span class="out">You get the full design</span></article>
+      <article><span class="step">Third</span><h3>Stage</h3><p>Our team and makers build and run the night end to end, so the only thing you have to do is be there.</p><span class="out">You get the night</span></article>
+      <article><span class="step">Fourth</span><h3>Seal</h3><p>The plans are bound and handed to you, the edition number goes in our ledger, and the design is retired for good.</p><span class="out">You get the sealed edition</span></article>
+    </div>
+  </section>
+
+  <!-- Formats -->
+  <section id="formats" class="section" style="border-top:1px solid var(--line)" aria-labelledby="formats-title">
+    <div class="wrap">
+      <div class="section-head" style="margin-bottom:28px">
+        <div>
+          <span class="label">Formats</span>
+          <h2 class="h2" id="formats-title">Pick the occasion. <span class="it">We'll make it singular.</span></h2>
+        </div>
+      </div>
+      <div class="pills" role="tablist" aria-label="Event formats" id="format-tabs"></div>
+      <div class="format-panel" id="format-panel" role="tabpanel" aria-live="polite">
+        <div class="format-story">
+          <span class="label" id="fmt-count"></span>
+          <h3 id="fmt-title"></h3>
+          <p id="fmt-body"></p>
+        </div>
+        <div class="format-list">
+          <span class="label">What exists only for you</span>
+          <ol id="fmt-list"></ol>
+          <a class="text-link" href="#commission" id="fmt-cta">Commission this format
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sealed -->
+  <section class="sealed section" aria-labelledby="sealed-title">
+    <div class="wrap sealed-grid">
+      <h2 id="sealed-title">When the lights go up, the design disappears.</h2>
+      <dl>
+        <div class="row"><dt>The seal</dt><dd>Your plans (drawings, music, menu, lighting) are bound, wax-sealed and delivered to you. It is the only copy.</dd></div>
+        <div class="row"><dt>The object</dt><dd>Every guest leaves with one keepsake made for that night alone, stamped with the edition number.</dd></div>
+        <div class="row"><dt>The film</dt><dd>A single cut of the evening, delivered to the host. It never appears in our portfolio without your permission.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section id="gallery" class="wrap section" aria-labelledby="gallery-title">
+    <div class="section-head" style="margin-bottom:28px">
+      <div>
+        <span class="label" id="gallery-count">The gallery</span>
+        <h2 class="h2" id="gallery-title">Proof it happened. <span class="it">Once.</span></h2>
+      </div>
+      <p>Photos from sealed editions, shared with each host's permission. Tap any photo to see it larger, share it, or ask us about it on WhatsApp.</p>
+    </div>
+    <div class="pills" role="tablist" aria-label="Filter photos" id="gallery-filters"></div>
+    <div class="gallery" id="gallery-grid">
+      <button type="button" class="tile" aria-label="Open photo: The entrance aisle at dusk" data-cat="wedding" onclick="openLightbox(0)">
+        <div class="tile-frame" style="aspect-ratio: 4/5">
+          <img src="images/wedding-01.jpg" alt="The entrance aisle at dusk" loading="lazy">
+          <span class="tile-tag">Nº 001</span>
+        </div>
+        <div class="tile-meta">
+          <strong>The entrance aisle at dusk</strong>
+          <span>Wedding</span>
+        </div>
+      </button>
+      <button type="button" class="tile" aria-label="Open photo: The moment of reveal" data-cat="launch" onclick="openLightbox(1)">
+        <div class="tile-frame" style="aspect-ratio: 1/1">
+          <img src="images/launch-01.jpg" alt="The moment of reveal" loading="lazy">
+          <span class="tile-tag">Nº 002</span>
+        </div>
+        <div class="tile-meta">
+          <strong>The moment of reveal</strong>
+          <span>Premiere</span>
+        </div>
+      </button>
+      <button type="button" class="tile" aria-label="Open photo: The long table, before guests" data-cat="gala" onclick="openLightbox(2)">
+        <div class="tile-frame" style="aspect-ratio: 3/4">
+          <img src="images/gala-01.jpg" alt="The long table, before guests" loading="lazy">
+          <span class="tile-tag">Nº 003</span>
+        </div>
+        <div class="tile-meta">
+          <strong>The long table, before guests</strong>
+          <span>Gala</span>
+        </div>
+      </button>
+      <button type="button" class="tile" aria-label="Open photo: Keepsakes laid at every seat" data-cat="milestone" onclick="openLightbox(3)">
+        <div class="tile-frame" style="aspect-ratio: 4/3">
+          <img src="images/milestone-01.jpg" alt="Keepsakes laid at every seat" loading="lazy">
+          <span class="tile-tag">Nº 001</span>
+        </div>
+        <div class="tile-meta">
+          <strong>Keepsakes laid at every seat</strong>
+          <span>Milestone</span>
+        </div>
+      </button>
+      <button type="button" class="tile" aria-label="Open photo: First dance under the light rig" data-cat="wedding" onclick="openLightbox(4)">
+        <div class="tile-frame" style="aspect-ratio: 3/4">
+          <img src="images/wedding-02.jpg" alt="First dance under the light rig" loading="lazy">
+          <span class="tile-tag">Nº 001</span>
+        </div>
+        <div class="tile-meta">
+          <strong>First dance under the light rig</strong>
+          <span>Wedding</span>
+        </div>
+      </button>
+      <button type="button" class="tile" aria-label="Open photo: Closing ritual by the water" data-cat="retreat" onclick="openLightbox(5)">
+        <div class="tile-frame" style="aspect-ratio: 4/5">
+          <img src="images/retreat-01.jpg" alt="Closing ritual by the water" loading="lazy">
+          <span class="tile-tag">Nº 002</span>
+        </div>
+        <div class="tile-meta">
+          <strong>Closing ritual by the water</strong>
+          <span>Retreat</span>
+        </div>
+      </button>
+      <button type="button" class="tile" aria-label="Open photo: Guests arriving through the tunnel" data-cat="launch" onclick="openLightbox(6)">
+        <div class="tile-frame" style="aspect-ratio: 4/3">
+          <img src="images/launch-02.jpg" alt="Guests arriving through the tunnel" loading="lazy">
+          <span class="tile-tag">Nº 002</span>
+        </div>
+        <div class="tile-meta">
+          <strong>Guests arriving through the tunnel</strong>
+          <span>Premiere</span>
+        </div>
+      </button>
+      <button type="button" class="tile" aria-label="Open photo: The giving moment" data-cat="gala" onclick="openLightbox(7)">
+        <div class="tile-frame" style="aspect-ratio: 1/1">
+          <img src="images/gala-02.jpg" alt="The giving moment" loading="lazy">
+          <span class="tile-tag">Nº 003</span>
+        </div>
+        <div class="tile-meta">
+          <strong>The giving moment</strong>
+          <span>Gala</span>
+        </div>
+      </button>
+      <button type="button" class="tile" aria-label="Open photo: The sealed plans, handed over" data-cat="wedding" onclick="openLightbox(8)">
+        <div class="tile-frame" style="aspect-ratio: 4/5">
+          <img src="images/wedding-03.jpg" alt="The sealed plans, handed over" loading="lazy">
+          <span class="tile-tag">Nº 001</span>
+        </div>
+        <div class="tile-meta">
+          <strong>The sealed plans, handed over</strong>
+          <span>Wedding</span>
+        </div>
+      </button>
+      <button type="button" class="tile" aria-label="Open photo: Family letters on the wall" data-cat="milestone" onclick="openLightbox(9)">
+        <div class="tile-frame" style="aspect-ratio: 3/4">
+          <img src="images/milestone-02.jpg" alt="Family letters on the wall" loading="lazy">
+          <span class="tile-tag">Nº 001</span>
+        </div>
+        <div class="tile-meta">
+          <strong>Family letters on the wall</strong>
+          <span>Milestone</span>
+        </div>
+      </button>
+      <button type="button" class="tile" aria-label="Open photo: Workshop room, morning light" data-cat="retreat" onclick="openLightbox(10)">
+        <div class="tile-frame" style="aspect-ratio: 4/3">
+          <img src="images/retreat-02.jpg" alt="Workshop room, morning light" loading="lazy">
+          <span class="tile-tag">Nº 002</span>
+        </div>
+        <div class="tile-meta">
+          <strong>Workshop room, morning light</strong>
+          <span>Retreat</span>
+        </div>
+      </button>
+      <button type="button" class="tile" aria-label="Open photo: The stage from the back of the hall" data-cat="gala" onclick="openLightbox(11)">
+        <div class="tile-frame" style="aspect-ratio: 4/5">
+          <img src="images/gala-03.jpg" alt="The stage from the back of the hall" loading="lazy">
+          <span class="tile-tag">Nº 003</span>
+        </div>
+        <div class="tile-meta">
+          <strong>The stage from the back of the hall</strong>
+          <span>Gala</span>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <!-- Ledger -->
+  <section id="ledger" class="wrap section" style="padding-top:0" aria-labelledby="ledger-title">
+    <div class="section-head">
+      <div>
+        <span class="label">The ledger</span>
+        <h2 class="h2" id="ledger-title">We keep the number. <span class="it">You keep the night.</span></h2>
+      </div>
+      <p>We take on only [N] editions a year, so each one gets the whole house. Here is where this year stands.</p>
+    </div>
+    <div class="ledger">
+      <table>
+        <caption class="visually-hidden">Editions this year</caption>
+        <tbody>
+          <tr><th scope="row" class="no">Nº 001</th><td class="name">[Edition title]</td><td class="meta">[Month, year]</td><td class="meta">[City]</td><td><span class="status">Sealed</span></td></tr>
+          <tr><th scope="row" class="no">Nº 002</th><td class="name">[Edition title]</td><td class="meta">[Month, year]</td><td class="meta">[City]</td><td><span class="status">Sealed</span></td></tr>
+          <tr><th scope="row" class="no">Nº 003</th><td class="name">[Edition title]</td><td class="meta">[Month, year]</td><td class="meta">[City]</td><td><span class="status composing">In design</span></td></tr>
+          <tr><th scope="row" class="no">Nº 004</th><td class="name">Yours?</td><td class="meta">Open</td><td class="meta">Anywhere</td><td><a class="status open" href="#commission">Open to commission</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Commission -->
+  <section id="commission" class="commission section" aria-labelledby="commission-title">
+    <div class="wrap commission-grid">
+      <div>
+        <span class="label">Commission</span>
+        <h2 id="commission-title">Tell us the story. <span class="it">We'll design the night.</span></h2>
+        <p style="margin:28px 0 0;font-size:17px;line-height:1.65;color:var(--body);max-width:42ch">Every edition starts with a private conversation with our creative director. Editions begin from [YOUR STARTING PRICE].</p>
+        <div class="contact">
+          <a class="wa-link" data-wa="general" href="#" target="_blank" rel="noopener">WhatsApp <span data-wa-display></span></a>
+          <a href="mailto:[EMAIL]">[EMAIL ADDRESS]</a>
+          <span>[PHONE NUMBER]</span>
+          <span>[STUDIO ADDRESS]</span>
+        </div>
+      </div>
+
+      <div>
+        <form id="enquiry" novalidate>
+          <fieldset>
+            <legend class="label">What's the occasion?</legend>
+            <div class="pills" id="occasions"></div>
+          </fieldset>
+          <div class="fields">
+            <div class="field" id="f-name"><label class="label" for="name">Your name</label><input id="name" name="name" type="text" autocomplete="name" placeholder="Full name"><span class="error" aria-live="polite"></span></div>
+            <div class="field"><label class="label" for="email">Email (optional)</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com"></div>
+            <div class="field"><label class="label" for="date">When</label><input id="date" name="date" type="text" placeholder="A season or exact date"></div>
+            <div class="field"><label class="label" for="guests">Guests</label><input id="guests" name="guests" type="text" inputmode="numeric" placeholder="Roughly how many"></div>
+          </div>
+          <div class="field" id="f-story"><label class="label" for="story">The story behind it</label><textarea id="story" name="story" rows="4" placeholder="A memory, a founding moment, a promise. Whatever this night is really about."></textarea><span class="error" aria-live="polite"></span></div>
+          <div class="form-actions">
+            <a class="btn btn-wa" id="send-wa" href="#" target="_blank" rel="noopener">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.7-5.1A8.5 8.5 0 1 1 21 11.5z"/></svg>
+              Send on WhatsApp
+            </a>
+            <a class="btn btn-ghost" id="send-mail" href="#">Send by email</a>
+          </div>
+          <p class="form-note">WhatsApp opens with your details already written. Just press send.</p>
+        </form>
+        <div class="done" id="done" tabindex="-1">
+          <span class="label" style="color:var(--accent)">Request sent</span>
+          <h3>Your story is with us.</h3>
+          <p>Our creative director will reach out personally to set up the first conversation. Nothing is designed until we've listened.</p>
+          <button class="btn btn-ghost" type="button" id="again">Start another request</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap footer">
+  <div class="wordmark" aria-hidden="true">ONCE<i></i></div>
+  <div class="foot-row">
+    <span>© <span id="yr"></span> ONCE Event House, [CITY]</span>
+    <nav aria-label="Footer">
+      <a href="#vow">The vow</a><a href="#method">How we work</a><a href="#gallery">Gallery</a><a href="#ledger">Ledger</a>
+      <a data-wa="general" href="#" target="_blank" rel="noopener">WhatsApp</a>
+      <a href="[INSTAGRAM URL]">Instagram</a>
+    </nav>
+    <span>Nothing here will happen twice.</span>
+  </div>
+</footer>
+
+<a class="wa-float" data-wa="general" href="#" target="_blank" rel="noopener" aria-label="Chat with ONCE on WhatsApp">
+  <span class="dot"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.7-5.1A8.5 8.5 0 1 1 21 11.5z"/></svg></span>
+  <span class="txt">Talk to the house</span>
+</a>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lb-caption">
+  <div class="lb-inner">
+    <div class="lb-top">
+      <span class="label" id="lb-meta" style="color:var(--accent)"></span>
+      <button class="icon-btn" type="button" id="lb-close" aria-label="Close photo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="lb-stage">
+      <button class="icon-btn" type="button" id="lb-prev" aria-label="Previous photo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <div class="lb-image" id="lb-image"></div>
+      <button class="icon-btn" type="button" id="lb-next" aria-label="Next photo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+    <div class="lb-bottom">
+      <span class="lb-caption" id="lb-caption"></span>
+      <div class="lb-actions">
+        <a class="btn btn-ghost" id="lb-share" href="#" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/></svg>
+          Share on WhatsApp
+        </a>
+        <a class="btn btn-wa" id="lb-ask" href="#" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.7-5.1A8.5 8.5 0 1 1 21 11.5z"/></svg>
+          Ask about this edition
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   SETTINGS: edit these to make the site yours
+   ===================================================================== */
+const SETTINGS = {
+  // Your WhatsApp number with country code, digits only. India example: "919876543210"
+  whatsappNumber: "",
+  email: "[EMAIL]",
+};
+
+/* Gallery photos. Put your image path in `src` (e.g. "photos/wedding-01.jpg").
+   Leave src empty to show a placeholder.
+   cat must be one of: wedding, launch, gala, milestone, retreat */
+const PHOTOS = [
+  { src: "images/wedding-01.jpg", cat: "wedding",   edition: "Nº 001", caption: "The entrance aisle at dusk",          ratio: "4/5" },
+  { src: "images/launch-01.jpg", cat: "launch",    edition: "Nº 002", caption: "The moment of reveal",                ratio: "1/1" },
+  { src: "images/gala-01.jpg", cat: "gala",      edition: "Nº 003", caption: "The long table, before guests",       ratio: "3/4" },
+  { src: "images/milestone-01.jpg", cat: "milestone", edition: "Nº 001", caption: "Keepsakes laid at every seat",        ratio: "4/3" },
+  { src: "images/wedding-02.jpg", cat: "wedding",   edition: "Nº 001", caption: "First dance under the light rig",     ratio: "3/4" },
+  { src: "images/retreat-01.jpg", cat: "retreat",   edition: "Nº 002", caption: "Closing ritual by the water",         ratio: "4/5" },
+  { src: "images/launch-02.jpg", cat: "launch",    edition: "Nº 002", caption: "Guests arriving through the tunnel",  ratio: "4/3" },
+  { src: "images/gala-02.jpg", cat: "gala",      edition: "Nº 003", caption: "The giving moment",                   ratio: "1/1" },
+  { src: "images/wedding-03.jpg", cat: "wedding",   edition: "Nº 001", caption: "The sealed plans, handed over",       ratio: "4/5" },
+  { src: "images/milestone-02.jpg", cat: "milestone", edition: "Nº 001", caption: "Family letters on the wall",          ratio: "3/4" },
+  { src: "images/retreat-02.jpg", cat: "retreat",   edition: "Nº 002", caption: "Workshop room, morning light",        ratio: "4/3" },
+  { src: "images/gala-03.jpg", cat: "gala",      edition: "Nº 003", caption: "The stage from the back of the hall", ratio: "4/5" },
+];
+
+const FORMATS = [
+  { id: "wedding", label: "Weddings", occasion: "Wedding",
+    title: "A ceremony designed from your vows, not a venue package.",
+    body: "We start with how you met and what you promise each other, and build every room, sound and course outward from that. No two of our weddings share a single element.",
+    list: ["An entrance piece of music written for the two of you", "A table and flower design made once, then retired", "The sealed plans, given to you the morning after"] },
+  { id: "launch", label: "Brand premieres", occasion: "Brand premiere",
+    title: "A launch staged like a premiere that can't be replayed.",
+    body: "Product reveals built like opening nights: a clear story, one moment of reveal, and a guest journey that makes everyone in the room feel like a first witness.",
+    list: ["A reveal moment built around your product's story", "A planned guest journey from arrival to exit", "One edition film for your launch channels"] },
+  { id: "gala", label: "Galas", occasion: "Gala",
+    title: "A gala that gives the cause its own room.",
+    body: "Fundraisers and award nights designed so the mission is felt, not just announced, through the space, the pacing and one unforgettable moment of giving.",
+    list: ["A running order built around the cause", "A one-off giving moment designed for the room", "Numbered keepsakes for every guest"] },
+  { id: "milestone", label: "Private milestones", occasion: "Milestone",
+    title: "Birthdays and anniversaries, treated like heirlooms.",
+    body: "Fortieth birthdays, golden anniversaries, homecomings. We talk to the people who love the guest of honour and design the night from what they tell us.",
+    list: ["Family stories woven into the evening", "A keepsake made for every guest", "A bound record of the night for the family"] },
+  { id: "retreat", label: "Retreats", occasion: "Retreat",
+    title: "Offsites a team still talks about years later.",
+    body: "Leadership retreats and company gatherings built around one shared turning point, the reason this team exists, instead of a generic agenda.",
+    list: ["A programme built around your company's story", "Spaces and rituals never used for another client", "A closing keepsake for every team member"] },
+];
+const CAT_LABEL = { wedding: "Wedding", launch: "Premiere", gala: "Gala", milestone: "Milestone", retreat: "Retreat" };
+const OCCASIONS = ["Wedding", "Brand premiere", "Gala", "Milestone", "Retreat", "Something else"];
+
+/* ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const waNumber = String(SETTINGS.whatsappNumber || "").replace(/\D/g, "");
+const wa = (text) => "https://wa.me/" + waNumber + "?text=" + encodeURIComponent(text);
+const waShare = (text) => "https://wa.me/?text=" + encodeURIComponent(text);
+
+// WhatsApp links everywhere
+$$('[data-wa="general"]').forEach(a => a.href = wa("Hello ONCE, I'd like to talk about commissioning an edition."));
+$$("[data-wa-display]").forEach(el => el.textContent = waNumber ? "+" + waNumber : "[YOUR NUMBER]");
+$("#yr").textContent = new Date().getFullYear();
+
+// Mobile menu
+const menuBtn = $(".menu-btn"), links = $("#nav-links");
+menuBtn.addEventListener("click", () => {
+  const open = links.classList.toggle("open");
+  menuBtn.setAttribute("aria-expanded", open);
+  menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+});
+links.addEventListener("click", e => { if (e.target.closest("a")) { links.classList.remove("open"); menuBtn.setAttribute("aria-expanded", "false"); } });
+
+// ---------- Formats ----------
+let currentFormat = 0;
+const tabs = $("#format-tabs");
+FORMATS.forEach((f, i) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "pill accent"; b.setAttribute("role", "tab");
+  b.textContent = f.label;
+  b.addEventListener("click", () => showFormat(i));
+  tabs.appendChild(b);
+});
+function showFormat(i) {
+  currentFormat = i;
+  const f = FORMATS[i];
+  $$(".pill", tabs).forEach((b, j) => b.setAttribute("aria-selected", j === i));
+  $("#fmt-count").textContent = "Format " + (i + 1) + " of " + FORMATS.length;
+  $("#fmt-title").textContent = f.title;
+  $("#fmt-body").textContent = f.body;
+  $("#fmt-list").innerHTML = "";
+  f.list.forEach(t => { const li = document.createElement("li"); li.textContent = t; $("#fmt-list").appendChild(li); });
+  const panel = $("#format-panel"); panel.classList.remove("fade"); void panel.offsetWidth; panel.classList.add("fade");
+}
+$("#fmt-cta").addEventListener("click", () => setOccasion(FORMATS[currentFormat].occasion));
+showFormat(0);
+
+// ---------- Gallery ----------
+const ART = [ // placeholder "stage light" compositions, used until you add real photos
+  "radial-gradient(60% 50% at 30% 30%, rgba(255,90,31,.55), transparent 70%), radial-gradient(40% 40% at 75% 70%, rgba(242,193,78,.35), transparent 70%), #1F1C19",
+  "radial-gradient(50% 60% at 70% 25%, rgba(127,167,255,.4), transparent 70%), radial-gradient(45% 45% at 25% 80%, rgba(255,90,31,.35), transparent 70%), #1A1816",
+  "radial-gradient(70% 40% at 50% 15%, rgba(242,193,78,.45), transparent 70%), linear-gradient(180deg, transparent 60%, rgba(239,232,220,.08)), #24201C",
+  "radial-gradient(40% 60% at 20% 50%, rgba(255,90,31,.4), transparent 70%), radial-gradient(40% 60% at 80% 50%, rgba(242,193,78,.3), transparent 70%), #1F1C19",
+];
+let galleryCat = "all", visible = [], lbIndex = -1, lastFocus = null;
+const filters = [{ id: "all", label: "All editions" }, ...FORMATS.map(f => ({ id: f.id, label: f.label }))];
+const filterBar = $("#gallery-filters");
+filters.forEach(f => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "pill"; b.setAttribute("role", "tab"); b.textContent = f.label;
+  b.addEventListener("click", () => { galleryCat = f.id; renderGallery(); });
+  filterBar.appendChild(b);
+});
+function photoNode(p, i, big) {
+  const frag = document.createDocumentFragment();
+  if (p.src) {
+    const img = document.createElement("img");
+    img.src = p.src; img.alt = p.caption; img.loading = "lazy";
+    frag.appendChild(img);
+  } else {
+    const art = document.createElement("div");
+    art.className = "art"; art.style.background = ART[i % ART.length];
+    frag.appendChild(art);
+    const hint = document.createElement("span");
+    hint.className = "tile-hint"; hint.textContent = "Your photo here";
+    if (big) { hint.style.fontSize = "13px"; }
+    frag.appendChild(hint);
+  }
+  return frag;
+}
+function renderGallery() {
+  $$(".pill", filterBar).forEach((b, j) => b.setAttribute("aria-selected", filters[j].id === galleryCat));
+  visible = PHOTOS.filter(p => galleryCat === "all" || p.cat === galleryCat);
+  $("#gallery-count").textContent = "The gallery, " + visible.length + (visible.length === 1 ? " photo" : " photos");
+  
+  $$(".tile", $("#gallery-grid")).forEach(tile => {
+    const isVisible = galleryCat === "all" || tile.dataset.cat === galleryCat;
+    tile.style.display = isVisible ? "block" : "none";
+  });
+  
+  let emptyMsg = $("#gallery-grid .empty");
+  if (!visible.length) {
+    if (!emptyMsg) {
+      $("#gallery-grid").insertAdjacentHTML("beforeend", '<p class="empty">No photos in this category yet. Pick another format above.</p>');
+    }
+  } else if (emptyMsg) {
+    emptyMsg.remove();
+  }
+}
+renderGallery();
+
+// ---------- Lightbox ----------
+const lb = $("#lightbox");
+function openLightbox(i) {
+  lastFocus = document.activeElement;
+  lbIndex = i; paintLightbox();
+  lb.classList.add("open"); document.body.style.overflow = "hidden";
+  $("#lb-close").focus();
+}
+function closeLightbox() {
+  lb.classList.remove("open"); document.body.style.overflow = ""; lbIndex = -1;
+  if (lastFocus) lastFocus.focus();
+}
+function paintLightbox() {
+  const p = visible[lbIndex];
+  $("#lb-meta").textContent = "Edition " + p.edition + ", " + CAT_LABEL[p.cat] + "  ·  " + (lbIndex + 1) + " of " + visible.length;
+  $("#lb-caption").textContent = p.caption;
+  const stage = $("#lb-image"); stage.innerHTML = ""; stage.appendChild(photoNode(p, PHOTOS.indexOf(p), true));
+  $("#lb-share").href = waShare("A night that happened once: " + p.caption + " (ONCE Event House, edition " + p.edition + ")");
+  $("#lb-ask").href = wa("Hello ONCE, I saw \"" + p.caption + "\" (edition " + p.edition + ", " + CAT_LABEL[p.cat] + ") in your gallery and I'd love to talk about something like it.");
+}
+const step = d => { lbIndex = (lbIndex + d + visible.length) % visible.length; paintLightbox(); };
+$("#lb-close").addEventListener("click", closeLightbox);
+$("#lb-prev").addEventListener("click", () => step(-1));
+$("#lb-next").addEventListener("click", () => step(1));
+lb.addEventListener("click", e => { if (e.target === lb) closeLightbox(); });
+lb.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeLightbox();
+  if (e.key === "ArrowLeft") step(-1);
+  if (e.key === "ArrowRight") step(1);
+  if (e.key === "Tab") { // keep focus inside the viewer
+    const f = $$("button, a", lb).filter(el => el.offsetParent !== null);
+    if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+    else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+  }
+});
+let touchX = null;
+lb.addEventListener("touchstart", e => touchX = e.touches[0].clientX, { passive: true });
+lb.addEventListener("touchend", e => { if (touchX === null) return; const dx = e.changedTouches[0].clientX - touchX; if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1); touchX = null; });
+
+// ---------- Enquiry ----------
+let occasion = "Wedding";
+const occBox = $("#occasions");
+OCCASIONS.forEach(o => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "pill"; b.textContent = o;
+  b.addEventListener("click", () => setOccasion(o));
+  occBox.appendChild(b);
+});
+function setOccasion(o) { occasion = o; $$(".pill", occBox).forEach(b => b.setAttribute("aria-pressed", b.textContent === o)); updateLinks(); }
+const val = id => $("#" + id).value.trim();
+function message() {
+  return [
+    "Hello ONCE, I'd like to commission an edition.", "",
+    "Occasion: " + occasion,
+    "Name: " + (val("name") || "-"),
+    "Email: " + (val("email") || "-"),
+    "When: " + (val("date") || "-"),
+    "Guests: " + (val("guests") || "-"), "",
+    "The story: " + (val("story") || "-"),
+  ].join("\n");
+}
+function updateLinks() {
+  $("#send-wa").href = wa(message());
+  $("#send-mail").href = "mailto:" + SETTINGS.email + "?subject=" + encodeURIComponent("Commission request: " + occasion) + "&body=" + encodeURIComponent(message());
+}
+function setError(fieldId, msg) {
+  const f = $("#" + fieldId); f.dataset.invalid = msg ? "true" : "false"; $(".error", f).textContent = msg || "";
+}
+function validate() {
+  let ok = true;
+  if (!val("name")) { setError("f-name", "Add your name so we know who's writing."); ok = false; } else setError("f-name");
+  if (val("story").length < 10) { setError("f-story", "Tell us a little about the occasion, even one sentence helps."); ok = false; } else setError("f-story");
+  if (!ok) $(".field[data-invalid='true'] input, .field[data-invalid='true'] textarea").focus();
+  return ok;
+}
+$("#enquiry").addEventListener("input", updateLinks);
+function onSend(e) {
+  updateLinks();
+  if (!validate()) { e.preventDefault(); return; }
+  setTimeout(() => { $("#enquiry").style.display = "none"; $("#done").classList.add("show"); $("#done").focus(); }, 300);
+}
+$("#send-wa").addEventListener("click", onSend);
+$("#send-mail").addEventListener("click", onSend);
+$("#again").addEventListener("click", () => { $("#enquiry").reset(); $("#done").classList.remove("show"); $("#enquiry").style.display = ""; setOccasion("Wedding"); $("#name").focus(); });
+setOccasion("Wedding");
+</script>
+</body>
+</html>
